@@ -1,0 +1,10 @@
+node_modules/
+dist/
+session/
+logs/
+.env
+.wwebjs_auth/
+.wwebjs_cache/
+data/*.db
+uploads/*
+!uploads/.gitkeep

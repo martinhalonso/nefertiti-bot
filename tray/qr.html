@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bot Nefertiti — Vincular WhatsApp</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 20px;
+      color: #111;
+    }
+    h2 { font-size: 1.2rem; font-weight: 600; }
+    p  { font-size: 0.85rem; color: #555; text-align: center; max-width: 280px; line-height: 1.5; }
+    #qr-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12);
+    }
+    #qr-img { display: block; width: 240px; height: 240px; }
+    #status {
+      font-size: 0.8rem;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Vincular WhatsApp</h2>
+  <div id="qr-container">
+    <img id="qr-img" src="" alt="QR Code" />
+  </div>
+  <p>Abrí WhatsApp en tu celular → Dispositivos vinculados → Vincular un dispositivo</p>
+  <div id="status"><div class="dot"></div><span>Esperando escaneo…</span></div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    ipcRenderer.on('qr-update', (_e, dataUrl) => {
+      document.getElementById('qr-img').src = dataUrl;
+    });
+
+    ipcRenderer.on('qr-authenticated', () => {
+      document.getElementById('status').innerHTML =
+        '<span style="color:#22c55e;font-weight:600">✅ ¡Vinculado! Esta ventana se cerrará…</span>';
+    });
+  </script>
+</body>
+</html>

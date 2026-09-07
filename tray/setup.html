@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuración — Bot Nefertiti</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      padding: 28px 24px 24px;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Indicador de pasos ── */
+    #step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      background: #ddd; color: #999;
+      transition: background 0.3s, color 0.3s;
+    }
+    .step-dot.active  { background: #4CAF50; color: #fff; }
+    .step-dot.done    { background: #a5d6a7; color: #fff; }
+    .step-line {
+      flex: 1; height: 2px; background: #ddd; max-width: 40px;
+      transition: background 0.3s;
+    }
+    .step-line.done { background: #a5d6a7; }
+
+    /* ── Contenido de pasos ── */
+    .step { flex: 1; display: flex; flex-direction: column; }
+    h1 { font-size: 18px; margin-bottom: 4px; color: #1a1a1a; }
+    .subtitle { font-size: 12px; color: #888; margin-bottom: 20px; }
+    .group { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .hint { font-size: 11px; color: #888; margin-bottom: 4px; }
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus { border-color: #4CAF50; }
+
+    /* ── Botones ── */
+    .btn-row { display: flex; gap: 10px; margin-top: auto; padding-top: 14px; }
+    .btn {
+      flex: 1; padding: 11px;
+      border: none; border-radius: 6px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-primary  { background: #4CAF50; color: #fff; }
+    .btn-primary:hover  { background: #43A047; }
+    .btn-secondary { background: #fff; color: #555; border: 1px solid #ccc; }
+    .btn-secondary:hover { background: #f0f0f0; }
+
+    /* ── Error ── */
+    .error { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
+
+    /* ── Info box ── */
+    .info-box {
+      background: #e8f5e9; border: 1px solid #c8e6c9;
+      border-radius: 6px; padding: 10px 12px;
+      font-size: 12px; color: #2e7d32; margin-top: 6px;
+    }
+
+    /* ── Paso 3: QR ── */
+    #qr-container {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+    }
+    #qr-box {
+      width: 256px; height: 256px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #qr-img { width: 240px; height: 240px; display: none; }
+    #qr-spinner {
+      font-size: 32px; animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #qr-status {
+      font-size: 13px; color: #555; text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Indicador de pasos -->
+  <div id="step-indicator">
+    <div class="step-dot active" id="dot-1">1</div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2">2</div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3">3</div>
+  </div>
+
+  <!-- ── Paso 1: Configuración básica ── -->
+  <div class="step" id="step-1">
+    <h1>⚙️ Configuración básica</h1>
+    <p class="subtitle">Datos necesarios para que el bot funcione.</p>
+
+    <div class="group">
+      <label>Número del administrador</label>
+      <div class="hint">Con código de país, sin + ni espacios. Ej: 5493416779186</div>
+      <input type="text" id="admin_phone" placeholder="5493416779186">
+      <div class="error" id="error-phone">Por favor completá el número del administrador.</div>
+    </div>
+
+    <div class="group">
+      <label>Monto de la seña ($)</label>
+      <input type="number" id="sena_monto" placeholder="10000" value="10000">
+    </div>
+
+    <div class="group">
+      <label>CBU <span style="font-weight:400;color:#999">(opcional)</span></label>
+      <input type="text" id="sena_cbu" placeholder="0000003100065268810015">
+    </div>
+
+    <div class="group">
+      <label>Alias <span style="font-weight:400;color:#999">(opcional)</span></label>
+      <input type="text" id="sena_alias" placeholder="nombre.apellido.xx">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep1()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ── Paso 2: Google Calendar ── -->
+  <div class="step" id="step-2" style="display:none">
+    <h1>🗓 Google Calendar</h1>
+    <p class="subtitle">Opcional — podés omitir este paso</p>
+
+    <div class="group">
+      <label>Client ID</label>
+      <input type="text" id="gcal_client_id" placeholder="xxxx.apps.googleusercontent.com">
+    </div>
+
+    <div class="group">
+      <label>Client Secret</label>
+      <input type="password" id="gcal_client_secret" placeholder="GOCSPX-...">
+    </div>
+
+    <div class="info-box">
+      ℹ️ Una vez configurado el bot, enviá <strong>"conectar calendar"</strong> por WhatsApp
+      para completar la autorización con Google.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="guardar(false)">Omitir</button>
+      <button class="btn btn-primary"   onclick="guardar(true)">Guardar y continuar</button>
+    </div>
+  </div>
+
+  <!-- ── Paso 3: QR de WhatsApp ── -->
+  <div class="step" id="step-3" style="display:none">
+    <h1>📱 Vincular WhatsApp</h1>
+    <p class="subtitle">Abrí WhatsApp → Dispositivos vinculados → Vincular un dispositivo</p>
+
+    <div id="qr-container">
+      <div id="qr-box">
+        <span id="qr-spinner">⏳</span>
+        <img id="qr-img" alt="QR WhatsApp">
+      </div>
+      <div id="qr-status">⏳ Iniciando bot…</div>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    let currentStep = 1;
+
+    function updateIndicator(step) {
+      for (let i = 1; i <= 3; i++) {
+        const dot  = document.getElementById(`dot-${i}`);
+        dot.className = 'step-dot' + (i === step ? ' active' : i < step ? ' done' : '');
+      }
+      for (let i = 1; i <= 2; i++) {
+        const line = document.getElementById(`line-${i}`);
+        line.className = 'step-line' + (i < step ? ' done' : '');
+      }
+    }
+
+    function goToStep(n) {
+      document.getElementById(`step-${currentStep}`).style.display = 'none';
+      document.getElementById(`step-${n}`).style.display = 'flex';
+      currentStep = n;
+      updateIndicator(n);
+    }
+
+    function goStep1() {
+      const phone = document.getElementById('admin_phone').value.trim();
+      const err   = document.getElementById('error-phone');
+      if (!phone) { err.style.display = 'block'; return; }
+      err.style.display = 'none';
+      goToStep(2);
+    }
+
+    function guardar(withCalendar) {
+      const clientId     = withCalendar ? document.getElementById('gcal_client_id').value.trim()     : '';
+      const clientSecret = withCalendar ? document.getElementById('gcal_client_secret').value.trim() : '';
+
+      ipcRenderer.send('setup-save', {
+        ADMIN_PHONE:           document.getElementById('admin_phone').value.trim(),
+        SENA_MONTO:            document.getElementById('sena_monto').value.trim() || '10000',
+        SENA_CBU:              document.getElementById('sena_cbu').value.trim(),
+        SENA_ALIAS:            document.getElementById('sena_alias').value.trim(),
+        GOOGLE_CLIENT_ID:      clientId,
+        GOOGLE_CLIENT_SECRET:  clientSecret,
+      });
+
+      goToStep(3);
+    }
+
+    // ── Eventos IPC desde el proceso principal ──
+
+    ipcRenderer.on('prefill', (_e, values) => {
+      if (values.ADMIN_PHONE)          document.getElementById('admin_phone').value        = values.ADMIN_PHONE;
+      if (values.SENA_MONTO)           document.getElementById('sena_monto').value         = values.SENA_MONTO;
+      if (values.SENA_CBU)             document.getElementById('sena_cbu').value           = values.SENA_CBU;
+      if (values.SENA_ALIAS)           document.getElementById('sena_alias').value         = values.SENA_ALIAS;
+      if (values.GOOGLE_CLIENT_ID)     document.getElementById('gcal_client_id').value     = values.GOOGLE_CLIENT_ID;
+      if (values.GOOGLE_CLIENT_SECRET) document.getElementById('gcal_client_secret').value = values.GOOGLE_CLIENT_SECRET;
+    });
+
+    ipcRenderer.on('bot-ready', () => {
+      document.getElementById('qr-status').innerHTML =
+        '<strong style="color:#22c55e">✅ ¡Bot reconectado! Cerrando…</strong>';
+      const qrBox = document.getElementById('qr-box');
+      if (qrBox) qrBox.style.display = 'none';
+    });
+
+    ipcRenderer.on('show-qr-step', () => {
+      if (currentStep !== 3) goToStep(3);
+    });
+
+    ipcRenderer.on('qr-update', (_e, dataUrl) => {
+      const img     = document.getElementById('qr-img');
+      const spinner = document.getElementById('qr-spinner');
+      img.src           = dataUrl;
+      img.style.display = 'block';
+      spinner.style.display = 'none';
+      document.getElementById('qr-status').textContent = 'Esperando escaneo…';
+    });
+
+    ipcRenderer.on('qr-authenticated', () => {
+      document.getElementById('qr-status').innerHTML =
+        '<strong style="color:#22c55e">✅ ¡Vinculado! Cerrando…</strong>';
+    });
+  </script>
+</body>
+</html>
