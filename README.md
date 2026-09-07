@@ -7,15 +7,17 @@
 
 ---
 
-## 📸 Screenshots / Capturas
+## 📸 Capturas · Screenshots
 
-> _Add a screenshot of a real conversation here — el flujo de reserva paso a paso y el panel de administración._
+<p align="center">
+  <img src="docs/screenshots/convo-1.png" width="30%" alt="Saludo personalizado y seleccion de servicio" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/convo-2.png" width="30%" alt="Reserva: servicio, total y eleccion de fecha" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/convo-3.png" width="30%" alt="Gestion de turnos: ver y modificar" />
+</p>
 
-| Booking flow | Admin panel |
-|:---:|:---:|
-| _(pegar captura de WhatsApp)_ | _(pegar captura)_ |
-
-<!-- Tip: guardá las imágenes en docs/screenshots/ y referencialas: ![Reserva](docs/screenshots/booking.png) -->
+<p align="center"><sub>Conversacion real con el bot: saludo personalizado y seleccion de servicio · reserva y eleccion de fecha · gestion de turnos (ver / modificar)</sub></p>
 
 ---
 
