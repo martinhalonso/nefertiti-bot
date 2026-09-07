@@ -8,3 +8,12 @@ logs/
 data/*.db
 uploads/*
 !uploads/.gitkeep
+
+# Notas internas de desarrollo (no van al repo publico)
+instrucciones-*.md
+prompts/
+PENDIENTES.md
+ROADMAP-SAAS.md
+INFORME-AUDITORIA-ADMIN.md
+PASOS-EMPAQUETADO.md
+docs/AGENTE-IA-DISEÑO.md
